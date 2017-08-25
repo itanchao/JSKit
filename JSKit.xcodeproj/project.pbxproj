@@ -91,6 +91,7 @@
 				D5F890171F4FFE2000B5B15D /* JSKit */,
 				D5F890051F4FF95900B5B15D /* AppDelegate.swift */,
 				D5F890071F4FF95900B5B15D /* ViewController.swift */,
+				D5F890261F502C0500B5B15D /* test.html */,
 				D5F890091F4FF95900B5B15D /* Main.storyboard */,
 				D5F8900C1F4FF95900B5B15D /* Assets.xcassets */,
 				D5F8900E1F4FF95900B5B15D /* LaunchScreen.storyboard */,
@@ -103,7 +104,6 @@
 		D5F890171F4FFE2000B5B15D /* JSKit */ = {
 			isa = PBXGroup;
 			children = (
-				D5F890261F502C0500B5B15D /* test.html */,
 				D5F890181F4FFE2000B5B15D /* JSBridge.js */,
 				D5F8901B1F4FFF6E00B5B15D /* JSBridge.swift */,
 			);

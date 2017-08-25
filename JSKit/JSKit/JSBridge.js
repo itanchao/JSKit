@@ -33,7 +33,6 @@ var JSBridge = {
 var Event = {
     _listeners: {},
     addEvent: function(type, fn) {
-        alert(1);
         if (typeof this._listeners[type] === "undefined") {
             this._listeners[type] = [];
         }

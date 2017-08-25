@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8" />
+    <title>iOS and Js</title>
+    <style type="text/css">
+      * {
+        font-size: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="margin-top: 100px">
+      <div><input type="button" value="打开蓝牙" onclick="openBluetoothAdapter()"></div><br/>
+      <br/>
+      <div id="SwiftDiv">
+          <span id="jsParamFuncSpan" style="color: red; font-size: 50px;"></span>
+      </div>
+      
+    </div>
+    
+    <script type="text/javascript">
+    // 1、扫码得SN去服务器请求锁信息
+    var webReqestMac = 'c8:fd:19:8e:10:e1';
+    // 2、启动蓝牙
+    function openBluetoothAdapter() {
+        JSBridge.callNativeFunc('openBluetoothAdapter',
+                                {'mac':webReqestMac, 'services':['0000fee7-0000-1000-8000-00805f9b34fb']},
+                                {
+                                   success:function(result){
+                                       var res = JSON.parse(result)
+                                       if (!res.isSupportBLE) {
+                                            alert("您的手机系统不支持蓝牙！");
+                                       }else{
+                                            alert("您的手机系统支持蓝牙！");
+                                       }
+                                   }, fail: function(result) {
+                                       var res = JSON.parse(result)
+                                       // 蓝牙打开失败，返回失败原因
+                                       if (res.error == 12) {
+                                            alert("蓝牙未打开");
+                                       } else if (res.error == 13) {
+                                            alert("蓝牙于系统服务的连接暂时丢失");
+                                       } else if (res.error == 14) {
+                                            alert("未授权使用蓝牙功能");
+                                       } 
+                                   }
+                                }
+                              );
+    }
+      </script>
+  </body>
+</html>
