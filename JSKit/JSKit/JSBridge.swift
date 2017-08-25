@@ -22,7 +22,7 @@ extension JSBridge : WKScriptMessageHandler{
         guard message.name == JSBridgeHandle else {return}
         guard let jsonData = (message.body as? String)?.data(using: .utf8, allowLossyConversion: false) else { return}
         guard let dic = JSON(data: jsonData).dictionaryObject else { return }
-        jsaction(methodName: dic["methodName"] as? String , params: dic["params"] as? [String:Any] ?? [String:Any]() ,{ (response, resultType) in
+        jsAction(methodName: dic["methodName"] as? String , params: dic["params"] as? [String:Any] ?? [String:Any]() ,{ (response, resultType) in
             if let callBackName = dic["callBackName"] as? String{
                 var jscode = ""
                 if let result = response as? [String : Any]{
@@ -47,7 +47,7 @@ extension JSBridge : WKScriptMessageHandler{
             }
         })
     }
-    func jsaction(methodName : String?, params:[String:Any] = [String:Any](),_ callback:@escaping ((_ response:Any?,_ resultType:Bool)->()) ) {
+    func jsAction(methodName : String?, params:[String:Any] = [String:Any](),_ callback:@escaping ((_ response:Any?,_ resultType:Bool)->()) ) {
         guard methodName != nil else {
             JSLogger.debug("methodName为空")
             return
