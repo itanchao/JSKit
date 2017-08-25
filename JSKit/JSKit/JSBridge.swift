@@ -15,46 +15,37 @@ class JSBridge: NSObject {
     var webView : WKWebView?
     let handleJS : String = try! String(contentsOfFile: Bundle(for: JSBridge.self).path(forResource: "JSBridge", ofType: "js")!, encoding: .utf8)
     static let shared = JSBridge()
-    
 }
 extension JSBridge : WKScriptMessageHandler{
     @available(iOS 8.0, *)
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == JSBridgeHandle else {
-            return
-        }
-        JSLogger.debug(message.body)
-        if let jsonData = (message.body as? String)?.data(using: .utf8, allowLossyConversion: false) {
-            if let dic = JSON(data: jsonData).dictionaryObject{
-                    jsaction(methodName: dic["methodName"] as? String , params: dic["params"] as? [String:Any] ?? [String:Any]() ,
-                           { (response, resultType) in
-                            if let callBackName = dic["callBackName"] as? String{
-                                var jscode = ""
-                                if let result = response as? [String : Any]{
-                                    if let data = try? JSONSerialization.data(withJSONObject: result, options: JSONSerialization.WritingOptions.prettyPrinted){
-                                        let jsonStr = String(data: data, encoding: .utf8)!
-                                        jscode = "JSBridge.callBack\(callBackName,jsonStr,resultType ? "success":"fail")"
-                                    }
-                                }else if let result = response as? [Any]{
-                                    if let data = try? JSONSerialization.data(withJSONObject: result, options: JSONSerialization.WritingOptions.prettyPrinted){
-                                        let jsonStr = String(data: data, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "").replacingOccurrences(of: "\\", with: "")
-                                        jscode = "JSBridge.callBack\(callBackName,jsonStr,resultType ? "success":"fail")"
-                                    }
-                                }else{
-                                    jscode = "JSBridge.callBack\(callBackName,response,resultType ? "success":"fail")"
-                                }
-                                DispatchQueue.main.async {
-                                    self.webView?.evaluateJavaScript(jscode, completionHandler: { (data, error) in
-                                        JSLogger.debug("methodName:\(dic["methodName"] as? String ?? "")\nparams:\(dic["params"] as? [String:Any] ?? [String:Any]())\ncallBackName:\(callBackName),JS=\(jscode)")
-                                        if (error != nil){
-                                            JSLogger.debug("evaluateJavaScript:error  \(String(describing: error))")
-                                        }
-                                    })
-                                }
-                            }
+        guard message.name == JSBridgeHandle else {return}
+        guard let jsonData = (message.body as? String)?.data(using: .utf8, allowLossyConversion: false) else { return}
+        guard let dic = JSON(data: jsonData).dictionaryObject else { return }
+        jsaction(methodName: dic["methodName"] as? String , params: dic["params"] as? [String:Any] ?? [String:Any]() ,{ (response, resultType) in
+            if let callBackName = dic["callBackName"] as? String{
+                var jscode = ""
+                if let result = response as? [String : Any]{
+                    if let data = try? JSONSerialization.data(withJSONObject: result, options: JSONSerialization.WritingOptions.prettyPrinted){
+                        jscode = "JSBridge.callBack\(callBackName,JSON(data: data),resultType ? "success":"fail")"
+                    }
+                }else if let result = response as? [Any]{
+                    if let data = try? JSONSerialization.data(withJSONObject: result, options: JSONSerialization.WritingOptions.prettyPrinted){
+                        jscode = "JSBridge.callBack\(callBackName,JSON(data: data),resultType ? "success":"fail")"
+                    }
+                }else{
+                    jscode = "JSBridge.callBack\(callBackName,response,resultType ? "success":"fail")"
+                }
+                DispatchQueue.main.async {
+                    self.webView?.evaluateJavaScript(jscode, completionHandler: { (data, error) in
+                        JSLogger.debug("methodName:\(dic["methodName"] as? String ?? "")\nparams:\(dic["params"] as? [String:Any] ?? [String:Any]())\ncallBackName:\(callBackName),JS=\(jscode)")
+                        if (error != nil){
+                            JSLogger.debug("evaluateJavaScript:error  \(String(describing: error))")
+                        }
                     })
+                }
             }
-        }
+        })
     }
     func jsaction(methodName : String?, params:[String:Any] = [String:Any](),_ callback:@escaping ((_ response:Any?,_ resultType:Bool)->()) ) {
         guard methodName != nil else {
