@@ -47,6 +47,13 @@ extension JSBridge : WKScriptMessageHandler{
             }
         })
     }
+    
+    /// 解析消息，调用原生方法
+    ///
+    /// - Parameters:
+    ///   - methodName: 要调取的原生方法名
+    ///   - params: 参数
+    ///   - callback: 回调
     func jsAction(methodName : String?, params:[String:Any] = [String:Any](),_ callback:@escaping ((_ response:Any?,_ resultType:Bool)->()) ) {
         guard methodName != nil else {
             print("methodName为空")

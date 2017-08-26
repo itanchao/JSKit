@@ -1,14 +1,19 @@
 var JSBridge = {
+    /*
+    *调取原生的方法
+    */
 	callNativeFunc:function(methodName,params,callBack){
 		var methodName = (methodName.replace(/function\s?/mi,"").split("("))[0];
         var callBackName =methodName + 'CallBack';
         var message;
+        // 没有回调
         if (!callBack) {
         	message = {
         		'methodName':methodName,
 		        	'params':params
 	        };
         }else{
+            /*有回调*/
         	message = {
         		'methodName':methodName,
 		        	'params':params,
@@ -18,6 +23,7 @@ var JSBridge = {
 	        	Event.addEvent(callBackName,callBack)
 	        }
         }
+        /*向原生发送消息*/
         window.webkit.messageHandlers.JSBridgeHandle.postMessage(JSON.stringify(message));
 	},
 
