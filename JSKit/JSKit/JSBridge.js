@@ -4,7 +4,6 @@ var JSBridge = {
     */
 	callNativeFunc:function(methodName,params,callBack){
 		var methodName = (methodName.replace(/function\s?/mi,"").split("("))[0];
-        var callBackName =methodName + 'CallBack';
         var message;
         // 没有回调
         if (!callBack) {
@@ -13,6 +12,7 @@ var JSBridge = {
 		        	'params':params
 	        };
         }else{
+            var callBackName =methodName + 'CallBack';
             /*有回调*/
         	message = {
         		'methodName':methodName,
