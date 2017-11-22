@@ -12,7 +12,6 @@ class ViewController: UIViewController {
     lazy private  var webView: WKWebView = {
         let config = WKWebViewConfiguration()
         config.preferences = WKPreferences()
-//        let preferences = WKPreferences()
         config.preferences.minimumFontSize = 10
         config.preferences.javaScriptEnabled = true
         config.preferences.javaScriptCanOpenWindowsAutomatically = true

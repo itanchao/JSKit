@@ -80,7 +80,6 @@ var Event = {
                 delete this._listeners[type];
             }
         }
-        
         return this;
     }
 };

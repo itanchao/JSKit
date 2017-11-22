@@ -10,6 +10,8 @@ import UIKit
 import WebKit
 import SwiftyJSON
 import Foundation
+import PromiseKit
+import CoreLocation
 let JSBridgeHandle = "JSBridgeHandle"
 class JSBridge: NSObject {
     var webView : WKWebView?
@@ -70,5 +72,26 @@ extension JSBridge : WKScriptMessageHandler{
         if let callbackMethod =  params["callbackMethod"] as? ((_ response:Any?,_ resultType:Bool)->()){
             callbackMethod(["isSupportBLE":true],true)
         }
+    }
+    @objc func getLocationAddress(_ params:[String:Any]){
+        _ = CLLocationManager.promise().then { (location) -> Void in
+            CLGeocoder().reverseGeocodeLocation(location, completionHandler: { (mark, _) in
+                if let place = mark?.first {
+                    if let callbackMethod =  params["callbackMethod"] as? ((_ response:Any?,_ resultType:Bool)->()){
+                        callbackMethod(["address":place.name],true)
+                    }
+                }else{
+                    if let callbackMethod =  params["callbackMethod"] as? ((_ response:Any?,_ resultType:Bool)->()){
+                        callbackMethod(["address":"请稍后重试"],false)
+                    }
+                }
+            })
+            
+        }
+//        _ = CLLocationManager.promise().then { (location) in
+//            if let callbackMethod =  params["callbackMethod"] as? ((_ response:Any?,_ resultType:Bool)->()){
+//                callbackMethod(["address":"\(location)"],true)
+//            }
+//        }
     }
 }
